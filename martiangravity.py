@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 def main():
 
     print("-------------------")
@@ -6,11 +9,11 @@ def main():
     print("-------------------\n")
 
     planet = "mars"
-    my_earth_weight_kg = 75  # 165lbs / 11.8st
+    human_weight_kg = 75  # 165lbs / 11.8st
 
-    weights = calculate_weights(planet, my_earth_weight_kg)
+    weights = calculate_weights(planet, human_weight_kg)
 
-    print(f"A person weighing {my_earth_weight_kg}kg on Earth would weigh:\n")
+    print(f"A person weighing {human_weight_kg}kg on Earth would weigh:\n")
     print(f"  {weights['pounds']:>3.2f}lbs")
     print(f"  {weights['stones']:>2.2f}st")
     print(f"  {weights['kilograms']:>3.2f}kg")
@@ -18,21 +21,44 @@ def main():
     print(f"\non {planet.capitalize()}.")
 
 
-def calculate_weights(planet, my_earth_weight_kg):
+def calculate_weights(planet: str, human_weight_kg: float) -> Dict:
+
+    """
+    An implementation of Newton's 
+    Law of Universal Gravitation.
+    The name of the planet is used to get 
+    the relevant mass and radius.
+    These and the Earth weight of the person
+    are used to calculate the person's
+    weight on the specified planet.
+    """
 
     planet_details = get_planet_details()
 
+    # variables used in formula
     G = 6.67408 * 10**-11
+    m1 = planet_details[planet]["mass_kg"]
+    m2 = human_weight_kg
+    r = planet_details[planet]["mean_radius_metres"]
 
-    Fg = G * ((planet_details[planet]["mass_kg"] * my_earth_weight_kg)
-              / (planet_details[planet]["mean_radius_metres"] ** 2))
+    # evaluate the formula.
+    # note: the result is the force in newtons
+    # which then has to be converted to kg etc.
+    F = G * ( (m1 * m2) / (r**2 ) )
 
-    weights = newtons_to_weights(Fg)
+    weights = newtons_to_weights(F)
 
     return weights
 
 
-def get_planet_details():
+def get_planet_details() -> Dict:
+
+    """
+    Create and return a dictionary of
+    hard-coded planet data:
+    masses in kilograms
+    radii in metres
+    """
 
     planet_details = {}
 
@@ -56,16 +82,23 @@ def get_planet_details():
     return planet_details
 
 
-def newtons_to_weights(N):
+def newtons_to_weights(newtons: float) -> Dict:
+
+    """
+    Convert newtons to various weight units
+    by division by appropriate amount.
+    """
 
     weights = {}
 
-    weights["newtons"] = N
-    weights["pounds"] = N / 4.4482216
+    weights["newtons"] = newtons
+    weights["pounds"] = newtons / 4.4482216
     weights["stones"] = weights["pounds"] / 14
-    weights["kilograms"] = N / 9.80665
+    weights["kilograms"] = newtons / 9.80665
 
     return weights
 
 
-main()
+if __name__ == "__main__":
+
+    main()
